@@ -1,10 +1,17 @@
 import React, { useEffect, useRef } from 'react';
 
+// --- CHANGE 1: Define a type for the TradingView object ---
+// This tells TypeScript what the TradingView object will look like once it's loaded.
+declare global {
+  interface Window {
+    TradingView: any;
+  }
+}
+
 let tvScriptLoadingPromise;
 
-// We now accept a 'containerId' to make each chart unique
 export default function TradingViewWidget({ symbol, containerId }) {
-  const onLoadScriptRef = useRef(null);
+  const onLoadScriptRef = useRef(null); // This fix was correct
 
   useEffect(
     () => {
@@ -17,18 +24,17 @@ export default function TradingViewWidget({ symbol, containerId }) {
           script.src = 'https://s3.tradingview.com/tv.js';
           script.type = 'text/javascript';
           script.onload = resolve;
-
           document.head.appendChild(script);
         });
       }
 
       tvScriptLoadingPromise.then(() => onLoadScriptRef.current && onLoadScriptRef.current());
 
-      return () => onLoadScriptRef.current = null;
+      return () => { onLoadScriptRef.current = null; };
 
       function createWidget() {
-        // We check for the unique containerId here
-        if (document.getElementById(containerId) && 'TradingView' in window) {
+        // --- CHANGE 2: Check if TradingView exists on window BEFORE using it ---
+        if (document.getElementById(containerId) && typeof window.TradingView !== 'undefined') {
           new window.TradingView.widget({
             autosize: true,
             symbol: symbol,
@@ -38,24 +44,19 @@ export default function TradingViewWidget({ symbol, containerId }) {
             style: "1",
             locale: "en",
             enable_publishing: false,
-            // This is the key change to hide the branding link
             hide_top_toolbar: true,
             hide_legend: true,
             save_image: false,
-            // We use the unique containerId to tell TradingView where to draw the chart
             container_id: containerId
           });
         }
       }
     },
-    // We add containerId to the dependency array
     [symbol, containerId]
   );
 
   return (
-    // The outer container no longer needs the copyright section
     <div style={{ height: "100%", width: "100%" }}>
-      {/* This div now uses the unique ID we pass in */}
       <div id={containerId} style={{ height: "100%", width: "100%" }} />
     </div>
   );
