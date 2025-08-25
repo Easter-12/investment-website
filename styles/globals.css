@@ -1,12 +1,17 @@
+/* This removes default browser margins, forcing an edge-to-edge layout */
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 /* Base styling for all screens */
 .hero-section {
-  text-align: center;
-  padding: 6rem 2rem;
+  text-align: center; padding: 6rem 1rem; /* A little padding for desktop */
   background-color: #111827;
   background-image: radial-gradient(at 50% 30%, hsla(190, 80%, 30%, 0.4) 0px, transparent 50%),
                     radial-gradient(at 50% 70%, hsla(190, 80%, 20%, 0.3) 0px, transparent 50%);
 }
-
 .hero-heading {
   font-size: 3.5rem; font-weight: bold; margin-bottom: 1rem; color: #22d3ee;
 }
@@ -14,46 +19,75 @@
   font-size: 1.25rem; color: #d1d5db;
 }
 
-/* New class for our content sections */
 .section-container {
-  padding: 4rem 2rem;
+  padding: 4rem 1rem; /* A little padding for desktop */
 }
-
 .section-heading {
   font-size: 2.5rem; font-weight: bold; text-align: center; margin-bottom: 2rem;
 }
+.content-wrapper {
+  max-width: 1200px; /* Limits content width on very large screens */
+  margin: 0 auto;
+  padding: 0 1rem; /* Internal padding for content */
+}
+
 
 /* --- MOBILE STYLES (Screen width 768px or less) --- */
 @media (max-width: 768px) {
   .hero-section {
-    padding: 5rem 1rem; /* Reduced padding */
+    padding: 5rem 1rem;
   }
   .hero-heading {
-    font-size: 2.5rem; /* Smaller title */
+    font-size: 2.5rem;
   }
   .hero-subheading {
     font-size: 1.1rem;
   }
-  /* NEW: Reduce padding for all other sections on mobile */
+  /* THIS IS THE KEY CHANGE: Remove side padding on the main sections */
   .section-container {
-    padding: 3rem 1rem; /* Reduced padding */
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
   }
   .section-heading {
-    font-size: 2rem; /* Smaller section titles */
+    font-size: 2rem;
+    padding: 0 1rem; /* Give the heading its own padding */
   }
 }
-/* Add this to the bottom of globals.css */
-@keyframes slideInAndOut {
-  0% {
-    transform: translateX(110%); /* Start off-screen to the right */
-    opacity: 0;
-  }
-  15%, 85% {
-    transform: translateX(0); /* On-screen */
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(110%); /* End off-screen to the right */
-    opacity: 0;
-  }
+
+/* --- NEWS TICKER ANIMATION --- */
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.ticker-wrap {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  background-color: rgba(30, 41, 59, 0.9);
+  color: white;
+  z-index: 100;
+  padding: 1rem 0;
+  border-top: 1px solid #334155;
+  backdrop-filter: blur(5px);
+}
+
+.ticker-content {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 15s linear infinite;
+  padding-left: 100%;
+}
+.ticker-item {
+  display: inline-block;
+  padding: 0 2rem;
+  font-size: 1rem;
+}
+.ticker-highlight {
+  color: #67e8f9;
+  font-weight: bold;
 }
