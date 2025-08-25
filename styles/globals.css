@@ -1,16 +1,51 @@
-html,
-body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+/* This is our base styling for all screen sizes */
+.hero-section {
+  text-align: center;
+  padding: 8rem 2rem;
+  background-color: #111827;
+  background-image: radial-gradient(at 50% 30%, hsla(190, 80%, 30%, 0.4) 0px, transparent 50%),
+                    radial-gradient(at 50% 70%, hsla(190, 80%, 20%, 0.3) 0px, transparent 50%);
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+.hero-heading {
+  font-size: 3.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #22d3ee;
 }
 
-* {
-  box-sizing: border-box;
+.hero-subheading {
+  font-size: 1.25rem;
+  color: #d1d5db;
+}
+
+.section-heading {
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+/* --- THIS IS THE MAGIC FOR MOBILE PHONES --- */
+/* If the screen width is 768px or less, apply these styles */
+@media (max-width: 768px) {
+  .hero-section {
+    /* Reduce the top/bottom padding on mobile */
+    padding: 5rem 1rem;
+  }
+
+  .hero-heading {
+    /* Make the main title smaller on mobile */
+    font-size: 2.5rem;
+  }
+
+  .hero-subheading {
+    /* Make the subtitle slightly smaller */
+    font-size: 1.1rem;
+  }
+
+  .section-heading {
+    /* Make all the other section titles smaller */
+    font-size: 2rem;
+  }
 }
