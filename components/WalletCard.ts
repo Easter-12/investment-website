@@ -6,10 +6,16 @@ export default function WalletCard({ wallet }) {
 
   // Function to copy the address to the clipboard
   const handleCopy = () => {
-    navigator.clipboard.writeText(wallet.wallet_address);
-    setCopied(true);
-    // Reset the "Copied!" message after 2 seconds
-    setTimeout(() => setCopied(false), 2000);
+    // This function now checks if navigator is available to prevent errors during build
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(wallet.wallet_address);
+      setCopied(true);
+      // Reset the "Copied!" message after 2 seconds
+      setTimeout(() => setCopied(false), 2000);
+    } else {
+      // Fallback for older browsers or non-secure contexts
+      alert("Could not copy text. Please copy it manually.");
+    }
   };
 
   return (
@@ -22,7 +28,6 @@ export default function WalletCard({ wallet }) {
       maxWidth: '500px',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-        {/* We can add a logo here in the future if we have logo_url */}
         <div>
           <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold' }}>{wallet.crypto_name} ({wallet.crypto_symbol})</h3>
           <p style={{ margin: '0.25rem 0 0 0', color: '#9ca3af' }}>Official Deposit Address</p>
@@ -37,7 +42,7 @@ export default function WalletCard({ wallet }) {
       </div>
 
       <button onClick={handleCopy} style={{
-        backgroundColor: copied ? '#10b981' : '#22d3ee', // Change color on copy
+        backgroundColor: copied ? '#10b981' : '#22d3ee',
         color: '#111827', fontWeight: 'bold',
         padding: '0.75rem', borderRadius: '8px', border: 'none',
         cursor: 'pointer', fontSize: '1rem', width: '100%',
