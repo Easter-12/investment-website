@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Picker from 'emoji-picker-react';
 import supportAvatar from '../public/support-avatar.jpg';
 
-type Message = { id: number; content: string | null; sent_by_admin: boolean; user_id: string; };
+type Message = { id: number; content: string | null; sent_by_admin: boolean; user_id: string; created_at: string; };
 
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,24 +16,30 @@ export default function ChatWidget() {
 
   const scrollToBottom = () => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); };
 
+  // This useEffect now correctly handles realtime updates by simply re-fetching
   useEffect(() => {
     let channel: any;
-    const setupChat = async () => {
+    const fetchAndSubscribe = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) return;
       setUser(session.user);
 
-      const { data: initialMessages } = await supabase.from('messages').select('*').eq('user_id', session.user.id).order('created_at');
-      setMessages(initialMessages || []);
+      // Function to get the latest messages
+      const fetchMessages = async () => {
+        const { data } = await supabase.from('messages').select('*').eq('user_id', session.user.id).order('created_at');
+        setMessages(data || []);
+      };
 
+      // Fetch initial messages
+      fetchMessages();
+
+      // Set up a listener that re-fetches messages on ANY change
       channel = supabase.channel(`public:messages:user_id=eq.${session.user.id}`)
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `user_id=eq.${session.user.id}` },
-          (payload) => {
-            setMessages(current => [...current, payload.new as Message]);
-          }
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'messages', filter: `user_id=eq.${session.user.id}` },
+          () => fetchMessages() // This is simpler and more reliable
         ).subscribe();
     };
-    setupChat();
+    fetchAndSubscribe();
     return () => { if (channel) supabase.removeChannel(channel); };
   }, []);
 
@@ -41,22 +47,42 @@ export default function ChatWidget() {
 
   const onEmojiClick = (emojiObject: any) => { setNewMessage(prev => prev + emojiObject.emoji); setShowPicker(false); };
 
-  // --- NEW, ROBUST DELETE FUNCTION ---
+  // Optimistic UI for Deletion (this was correct)
   const handleDeleteMessage = async (messageId: number) => {
-    // 1. INSTANTLY remove the message from the screen (Optimistic UI)
     setMessages(currentMessages => currentMessages.filter(msg => msg.id !== messageId));
-
-    // 2. In the background, send the delete command to the database
     await supabase.from('messages').delete().eq('id', messageId);
   };
 
+  // --- NEW, ROBUST SEND MESSAGE FUNCTION WITH OPTIMISTIC UI ---
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newMessage.trim() === '' || !user) return;
-    // Sending a message will still work via realtime.
-    await supabase.from('messages').insert({ user_id: user.id, content: newMessage, sent_by_admin: false });
+    const messageContent = newMessage.trim();
+    if (messageContent === '' || !user) return;
+
+    // 1. Clear the input field immediately
     setNewMessage('');
     setShowPicker(false);
+
+    // 2. Create a temporary message to display INSTANTLY
+    const optimisticMessage: Message = {
+      id: Date.now(), // Use a temporary unique ID
+      content: messageContent,
+      sent_by_admin: false,
+      user_id: user.id,
+      created_at: new Date().toISOString(),
+    };
+
+    // 3. Add the temporary message to the screen
+    setMessages(currentMessages => [...currentMessages, optimisticMessage]);
+
+    // 4. In the background, send the real message to the database
+    // The realtime listener will automatically replace our temporary message
+    // with the real one from the database, but the user won't notice.
+    await supabase.from('messages').insert({ 
+      user_id: user.id, 
+      content: messageContent, 
+      sent_by_admin: false 
+    });
   };
 
   if (!user) return null;
@@ -98,11 +124,9 @@ export default function ChatWidget() {
         </form>
       </div>
 
-      {/* --- THIS IS THE FIX FOR THE UI FLAW --- */}
-      {/* The chat bubble is now ONLY shown when the chat window is CLOSED */}
       {!isOpen && (
         <button onClick={() => setIsOpen(true)} className="chat-bubble">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
         </button>
       )}
     </>
