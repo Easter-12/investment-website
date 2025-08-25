@@ -4,7 +4,7 @@ let tvScriptLoadingPromise;
 
 // We now accept a 'containerId' to make each chart unique
 export default function TradingViewWidget({ symbol, containerId }) {
-  const onLoadScriptRef = useRef();
+  const onLoadScriptRef = useRef(null);
 
   useEffect(
     () => {
