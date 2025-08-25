@@ -1,23 +1,24 @@
 import '../styles/globals.css';
 import type { AppProps } from 'next/app';
+import Head from 'next/head'; // Import the Head component
 
-// Import our Header and Footer components
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    // This is the main container for the entire app
     <div>
-      {/* The Header will now be at the top of EVERY page */}
-      <Header />
+      {/* This Head component adds things to the <head> of our HTML */}
+      <Head>
+        <title>QuantumLeap Investments</title>
+        {/* THIS IS THE CRUCIAL LINE FOR MOBILE DEVICES */}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      </Head>
 
-      {/* This 'main' section holds the content of the current page (e.g., homepage or signup page) */}
+      <Header />
       <main>
         <Component {...pageProps} />
       </main>
-
-      {/* The Footer will now be at the bottom of EVERY page */}
       <Footer />
     </div>
   );
