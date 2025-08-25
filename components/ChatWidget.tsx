@@ -16,29 +16,45 @@ export default function ChatWidget() {
 
   const scrollToBottom = () => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); };
 
+  // This is the new, robust useEffect hook.
   useEffect(() => {
     let channel: any;
+
+    // This function fetches the latest messages for the user.
+    const fetchMessages = async (userId: string) => {
+      const { data } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at');
+      setMessages(data || []);
+    };
+
     const setupChat = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) return;
-      setUser(session.user);
 
-      const { data: initialMessages } = await supabase.from('messages').select('*').eq('user_id', session.user.id).order('created_at');
-      setMessages(initialMessages || []);
+      const currentUser = session.user;
+      setUser(currentUser);
 
-      channel = supabase.channel(`public:messages:user_id=eq.${session.user.id}`)
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'messages', filter: `user_id=eq.${session.user.id}` },
+      // 1. Fetch the initial messages when the component loads.
+      fetchMessages(currentUser.id);
+
+      // 2. Set up the subscription to listen for ANY change.
+      channel = supabase.channel(`public:messages:user_id=eq.${currentUser.id}`)
+        .on('postgres_changes', 
+          { event: '*', schema: 'public', table: 'messages', filter: `user_id=eq.${currentUser.id}` },
           (payload) => {
-            if (payload.eventType === 'INSERT') {
-              setMessages(current => [...current, payload.new as Message]);
-            }
-            if (payload.eventType === 'DELETE') {
-              setMessages(current => current.filter(msg => msg.id !== (payload.old as { id: number }).id));
-            }
+            // 3. When any change happens, just re-fetch the entire message list.
+            // This is the foolproof way to handle inserts AND deletes.
+            fetchMessages(currentUser.id);
           }
         ).subscribe();
     };
+
     setupChat();
+
+    // Cleanup function to remove the subscription.
     return () => { if (channel) supabase.removeChannel(channel); };
   }, []);
 
@@ -46,11 +62,15 @@ export default function ChatWidget() {
 
   const onEmojiClick = (emojiObject: any) => { setNewMessage(prev => prev + emojiObject.emoji); setShowPicker(false); };
 
-  const handleDeleteMessage = async (messageId: number) => { await supabase.from('messages').delete().eq('id', messageId); };
+  const handleDeleteMessage = async (messageId: number) => {
+    // Just send the delete command. The realtime listener will handle the update.
+    await supabase.from('messages').delete().eq('id', messageId);
+  };
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newMessage.trim() === '' || !user) return;
+    // Just send the insert command. The realtime listener will handle the update.
     await supabase.from('messages').insert({ user_id: user.id, content: newMessage, sent_by_admin: false });
     setNewMessage('');
     setShowPicker(false);
@@ -86,7 +106,6 @@ export default function ChatWidget() {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* --- THIS IS THE FIXED LINE --- */}
         {showPicker && <div style={{position: 'absolute', bottom: '70px', right: '10px', zIndex: 1001}}><Picker onEmojiClick={onEmojiClick} /></div>}
 
         <form onSubmit={handleSendMessage} style={{ display: 'flex', padding: '1rem', borderTop: '1px solid #334155', gap: '0.5rem', flexShrink: 0 }}>
@@ -97,7 +116,7 @@ export default function ChatWidget() {
       </div>
 
       <button onClick={() => setIsOpen(!isOpen)} className="chat-bubble">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
       </button>
     </>
   );
