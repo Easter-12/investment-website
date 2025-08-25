@@ -1,4 +1,3 @@
-// This is the fully corrected and verified code.
 import { useState } from 'react';
 
 export default function WalletCard({ wallet }: { wallet: any }) {
