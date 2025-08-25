@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Picker from 'emoji-picker-react';
 import supportAvatar from '../public/support-avatar.jpg';
 
-type Message = { id: number; content: string | null; sent_by_admin: boolean; user_id: string; created_at: string; };
+type Message = { id: number; content: string | null; sent_by_admin: boolean; user_id: string; };
 
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,67 +16,39 @@ export default function ChatWidget() {
 
   const scrollToBottom = () => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); };
 
-  // This is the new, robust useEffect with Polling.
   useEffect(() => {
     let interval: NodeJS.Timeout;
-
     const setupChat = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) return;
       setUser(session.user);
-
-      // Function to get the latest messages
       const fetchMessages = async () => {
         if (!session.user) return;
         const { data } = await supabase.from('messages').select('*').eq('user_id', session.user.id).order('created_at');
         setMessages(data || []);
       };
-
-      // 1. Fetch initial messages
       fetchMessages();
-
-      // 2. Start polling every 3 seconds to get new messages from the admin
       interval = setInterval(fetchMessages, 3000);
     };
-
     setupChat();
-
-    // Cleanup function to stop polling when the component is closed
-    return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
-    };
+    return () => { if (interval) clearInterval(interval); };
   }, []);
 
   useEffect(scrollToBottom, [messages]);
 
   const onEmojiClick = (emojiObject: any) => { setNewMessage(prev => prev + emojiObject.emoji); setShowPicker(false); };
-
-  // OPTIMISTIC UI: Deletion is INSTANT
   const handleDeleteMessage = async (messageId: number) => {
     setMessages(currentMessages => currentMessages.filter(msg => msg.id !== messageId));
     await supabase.from('messages').delete().eq('id', messageId);
   };
-
-  // OPTIMISTIC UI: Sending is INSTANT
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     const messageContent = newMessage.trim();
     if (messageContent === '' || !user) return;
-
-    const optimisticMessage: Message = {
-      id: Date.now(),
-      content: messageContent,
-      sent_by_admin: false,
-      user_id: user.id,
-      created_at: new Date().toISOString(),
-    };
-
+    const optimisticMessage = { id: Date.now(), content: messageContent, sent_by_admin: false, user_id: user.id, created_at: new Date().toISOString() };
     setMessages(currentMessages => [...currentMessages, optimisticMessage]);
     setNewMessage('');
     setShowPicker(false);
-
     await supabase.from('messages').insert({ user_id: user.id, content: messageContent, sent_by_admin: false });
   };
 
@@ -85,7 +57,7 @@ export default function ChatWidget() {
   return (
     <>
       <div className={`chat-window ${isOpen ? 'open' : ''}`}>
-        <div style={{ padding: '1rem', borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+        <div className="chat-header" style={{ borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <Image src={supportAvatar} alt="Support" width={40} height={40} style={{ borderRadius: '50%' }} />
             <div>
@@ -98,10 +70,10 @@ export default function ChatWidget() {
           <button onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', color: 'white', fontSize: '1.5rem', cursor: 'pointer' }}>×</button>
         </div>
 
-        <div style={{ flex: 1, padding: '1rem', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+        <div className="chat-messages-area" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
           {messages.map(msg => (
             <div key={msg.id} style={{ display: 'flex', justifyContent: msg.sent_by_admin ? 'flex-start' : 'flex-end', marginBottom: '0.5rem' }}>
-              <div style={{ backgroundColor: msg.sent_by_admin ? '#374151' : '#22d3ee', color: msg.sent_by_admin ? 'white' : 'black', padding: '0.5rem 1rem', borderRadius: '12px', maxWidth: '80%' }}>
+              <div className="chat-bubble" style={{ backgroundColor: msg.sent_by_admin ? '#374151' : '#22d3ee', color: msg.sent_by_admin ? 'white' : 'black', borderRadius: '12px', maxWidth: '80%' }}>
                 {msg.content}
               </div>
               {!msg.sent_by_admin && <button onClick={() => handleDeleteMessage(msg.id)} style={{background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', marginLeft: '0.5rem'}}>×</button>}
@@ -112,10 +84,10 @@ export default function ChatWidget() {
 
         {showPicker && <div style={{position: 'absolute', bottom: '70px', right: '10px', zIndex: 1001}}><Picker onEmojiClick={onEmojiClick} /></div>}
 
-        <form onSubmit={handleSendMessage} style={{ display: 'flex', padding: '1rem', borderTop: '1px solid #334155', gap: '0.5rem', flexShrink: 0 }}>
-          <button type="button" onClick={() => setShowPicker(val => !val)} style={{ padding: '0.5rem', border: 'none', borderRadius: '8px', background: 'none', color: 'white', cursor: 'pointer', fontSize: '1.2rem'}}>😊</button>
-          <input type="text" value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder="Type a message..." style={{ flex: 1, padding: '0.75rem', border: 'none', borderRadius: '8px', backgroundColor: '#374151', color: 'white' }} />
-          <button type="submit" disabled={!newMessage.trim()} style={{ padding: '0.75rem 1rem', border: 'none', borderRadius: '8px', backgroundColor: '#22d3ee', color: '#111827', cursor: 'pointer' }}>Send</button>
+        <form onSubmit={handleSendMessage} className="chat-form" style={{ borderTop: '1px solid #334155', flexShrink: 0 }}>
+          <button type="button" onClick={() => setShowPicker(val => !val)} className="chat-button" style={{ background: 'none', border: 'none', borderRadius: '8px', color: 'white', cursor: 'pointer'}}>😊</button>
+          <input type="text" value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder="Type a message..." className="chat-input" style={{ flex: 1, border: 'none', borderRadius: '8px', backgroundColor: '#374151', color: 'white' }} />
+          <button type="submit" disabled={!newMessage.trim()} className="chat-send-button" style={{ border: 'none', borderRadius: '8px', backgroundColor: '#22d3ee', color: '#111827', cursor: 'pointer', fontWeight: 'bold' }}>Send</button>
         </form>
       </div>
 

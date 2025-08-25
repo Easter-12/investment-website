@@ -140,3 +140,41 @@ body {
     border-radius: 0;
   }
 }
+/* Add this to the bottom of your globals.css file */
+
+/* --- MOBILE-FIRST CHAT UI IMPROVEMENTS --- */
+@media (max-width: 768px) {
+  .chat-header {
+    padding: 0.75rem 1rem; /* Tighter header padding */
+  }
+  .chat-header h3 {
+    font-size: 1.1rem; /* Smaller header text */
+  }
+
+  .chat-messages-area {
+    padding: 0.5rem; /* Reduce padding around messages */
+  }
+
+  .chat-bubble {
+    padding: 0.5rem 0.75rem; /* Smaller chat bubbles */
+    font-size: 0.95rem; /* Slightly smaller text in bubbles */
+  }
+
+  .chat-form {
+    padding: 0.5rem; /* Tighter form padding */
+    gap: 0.5rem;
+  }
+
+  .chat-input {
+    padding: 0.75rem; /* Comfortable input size */
+  }
+
+  .chat-button {
+    padding: 0.75rem; /* Larger, easier to press buttons */
+    font-size: 1.2rem; /* Larger icon size */
+  }
+
+  .chat-send-button {
+    padding: 0.75rem 1rem;
+  }
+}
