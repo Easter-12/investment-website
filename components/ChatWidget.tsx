@@ -33,7 +33,7 @@ export default function ChatWidget() {
               setMessages(current => [...current, payload.new as Message]);
             }
             if (payload.eventType === 'DELETE') {
-              setMessages(current => current.filter(msg => msg.id !== payload.old.id));
+              setMessages(current => current.filter(msg => msg.id !== (payload.old as { id: number }).id));
             }
           }
         ).subscribe();
@@ -86,7 +86,8 @@ export default function ChatWidget() {
           <div ref={messagesEndRef} />
         </div>
 
-        {showPicker && <div style={{position: 'absolute', bottom: '70px', right: '10px', zIndex: 1001}}><Picker onEmojiClick={onEmojiClick} theme="dark" /></div>}
+        {/* --- THIS IS THE FIXED LINE --- */}
+        {showPicker && <div style={{position: 'absolute', bottom: '70px', right: '10px', zIndex: 1001}}><Picker onEmojiClick={onEmojiClick} /></div>}
 
         <form onSubmit={handleSendMessage} style={{ display: 'flex', padding: '1rem', borderTop: '1px solid #334155', gap: '0.5rem', flexShrink: 0 }}>
           <button type="button" onClick={() => setShowPicker(val => !val)} style={{ padding: '0.5rem', border: 'none', borderRadius: '8px', background: 'none', color: 'white', cursor: 'pointer', fontSize: '1.2rem'}}>😊</button>
