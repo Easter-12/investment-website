@@ -1,51 +1,59 @@
-/* This is our base styling for all screen sizes */
+/* Base styling for all screens */
 .hero-section {
   text-align: center;
-  padding: 8rem 2rem;
+  padding: 6rem 2rem;
   background-color: #111827;
   background-image: radial-gradient(at 50% 30%, hsla(190, 80%, 30%, 0.4) 0px, transparent 50%),
                     radial-gradient(at 50% 70%, hsla(190, 80%, 20%, 0.3) 0px, transparent 50%);
 }
 
 .hero-heading {
-  font-size: 3.5rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  color: #22d3ee;
+  font-size: 3.5rem; font-weight: bold; margin-bottom: 1rem; color: #22d3ee;
+}
+.hero-subheading {
+  font-size: 1.25rem; color: #d1d5db;
 }
 
-.hero-subheading {
-  font-size: 1.25rem;
-  color: #d1d5db;
+/* New class for our content sections */
+.section-container {
+  padding: 4rem 2rem;
 }
 
 .section-heading {
-  font-size: 2.5rem;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 2rem;
+  font-size: 2.5rem; font-weight: bold; text-align: center; margin-bottom: 2rem;
 }
 
-/* --- THIS IS THE MAGIC FOR MOBILE PHONES --- */
-/* If the screen width is 768px or less, apply these styles */
+/* --- MOBILE STYLES (Screen width 768px or less) --- */
 @media (max-width: 768px) {
   .hero-section {
-    /* Reduce the top/bottom padding on mobile */
-    padding: 5rem 1rem;
+    padding: 5rem 1rem; /* Reduced padding */
   }
-
   .hero-heading {
-    /* Make the main title smaller on mobile */
-    font-size: 2.5rem;
+    font-size: 2.5rem; /* Smaller title */
   }
-
   .hero-subheading {
-    /* Make the subtitle slightly smaller */
     font-size: 1.1rem;
   }
-
+  /* NEW: Reduce padding for all other sections on mobile */
+  .section-container {
+    padding: 3rem 1rem; /* Reduced padding */
+  }
   .section-heading {
-    /* Make all the other section titles smaller */
-    font-size: 2rem;
+    font-size: 2rem; /* Smaller section titles */
+  }
+}
+/* Add this to the bottom of globals.css */
+@keyframes slideInAndOut {
+  0% {
+    transform: translateX(110%); /* Start off-screen to the right */
+    opacity: 0;
+  }
+  15%, 85% {
+    transform: translateX(0); /* On-screen */
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(110%); /* End off-screen to the right */
+    opacity: 0;
   }
 }

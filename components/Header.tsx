@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import NavMenu from './NavMenu';
-import Link from 'next/link'; // <-- Import Link
+import Link from 'next/link';
+import Image from 'next/image'; // Import the Image component
+import logoFile from '../public/logo.gif'; // Import the logo file
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,15 +17,21 @@ export default function Header() {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: '1rem 2rem',
+      padding: '0.5rem 1rem', // Reduced padding for a tighter look
       backgroundColor: '#1a2233',
       color: 'white',
       borderBottom: '1px solid #334155'
     }}>
-      {/* This is the new part. The title is now a link to the homepage ("/") */}
+      {/* The title is now a link containing the logo image */}
       <Link href="/">
-        <div style={{ fontSize: '1.5rem', fontWeight: 'bold', cursor: 'pointer' }}>
-          QuantumLeap
+        <div style={{ cursor: 'pointer' }}>
+          <Image 
+            src={logoFile} 
+            alt="QuantumLeap Logo" 
+            height={60} // Control the height of the logo
+            width={180} // Control the width of the logo
+            priority // Tells Next.js to load the logo first
+          />
         </div>
       </Link>
 

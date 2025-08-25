@@ -7,9 +7,9 @@ import TechImage from '../components/TechImage';
 import HowItWorks from '../components/HowItWorks';
 
 const testimonials = [
-  { name: 'Sarah J.', country: 'USA', flag: '🇺🇸', comment: 'This platform is a game-changer! My portfolio has never looked better.', imageUrl: 'https://i.pravatar.cc/150?img=1' },
-  { name: 'Kenji T.', country: 'Japan', flag: '🇯🇵', comment: 'The user interface is clean and the live data is incredibly fast.', imageUrl: 'https://i.pravatar.cc/150?img=5' },
-  { name: 'Maria G.', country: 'Germany', flag: '🇩🇪', comment: 'Excellent customer support and a wide variety of investment plans.', imageUrl: 'https://i.pravatar.cc/150?img=3' }
+    { name: 'Sarah J.', country: 'USA', flag: '🇺🇸', comment: 'This platform is a game-changer! My portfolio has never looked better.', imageUrl: 'https://i.pravatar.cc/150?img=1' },
+    { name: 'Kenji T.', country: 'Japan', flag: '🇯🇵', comment: 'The user interface is clean and the live data is incredibly fast.', imageUrl: 'https://i.pravatar.cc/150?img=5' },
+    { name: 'Maria G.', country: 'Germany', flag: '🇩🇪', comment: 'Excellent customer support and a wide variety of investment plans.', imageUrl: 'https://i.pravatar.cc/150?img=3' }
 ];
 
 const fakeInvestments = [
@@ -25,15 +25,27 @@ export default function HomePage() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const initialTimeout = setTimeout(() => { setIsVisible(true); }, 2000);
-    const interval = setInterval(() => {
-      setIsVisible(false);
+    const showAndCyclePopup = () => {
+      // Pick a random investment for the next cycle
+      const randomIndex = Math.floor(Math.random() * fakeInvestments.length);
+      setCurrentPopup(fakeInvestments[randomIndex]);
+
+      // Make it visible to start the animation
+      setIsVisible(true);
+
+      // After the animation duration (7s), hide it to reset
       setTimeout(() => {
-        const randomIndex = Math.floor(Math.random() * fakeInvestments.length);
-        setCurrentPopup(fakeInvestments[randomIndex]);
-        setIsVisible(true);
-      }, 500);
-    }, 7000);
+        setIsVisible(false);
+      }, 7000);
+    };
+
+    // Start the first pop-up after a short delay
+    const initialTimeout = setTimeout(showAndCyclePopup, 2000);
+
+    // Set an interval to show a new pop-up every 8 seconds (7s for animation + 1s pause)
+    const interval = setInterval(showAndCyclePopup, 8000);
+
+    // Cleanup function to prevent memory leaks
     return () => {
       clearTimeout(initialTimeout);
       clearInterval(interval);
@@ -42,25 +54,14 @@ export default function HomePage() {
 
   return (
     <div style={{ backgroundColor: '#111827', color: 'white' }}>
-
-      {/* We now use className instead of style for this section */}
       <div className="hero-section">
-        <h1 className="hero-heading">
-          QuantumLeap Investments
-        </h1>
-        <p className="hero-subheading">
-          Your future, secured. Real-time market data at your fingertips.
-        </p>
+        <h1 className="hero-heading">QuantumLeap Investments</h1>
+        <p className="hero-subheading">Your future, secured. Real-time market data at your fingertips.</p>
       </div>
-
       <HowItWorks />
       <TechImage />
-
-      <div style={{ padding: '4rem 2rem' }}>
-        {/* Use the section-heading class here */}
-        <h2 className="section-heading">
-            Live Market Overview
-        </h2>
+      <div className="section-container">
+        <h2 className="section-heading">Live Market Overview</h2>
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2rem' }}>
             <div style={{ height: '400px', width: '100%', maxWidth: '550px' }}><TradingViewWidget symbol="BINANCE:BTCUSDT" containerId="tradingview_chart_1" /></div>
             <div style={{ height: '400px', width: '100%', maxWidth: '550px' }}><TradingViewWidget symbol="BINANCE:ETHUSDT" containerId="tradingview_chart_2" /></div>
@@ -68,29 +69,17 @@ export default function HomePage() {
             <div style={{ height: '400px', width: '100%', maxWidth: '550px' }}><TradingViewWidget symbol="BINANCE:XRPUSDT" containerId="tradingview_chart_4" /></div>
         </div>
       </div>
-
-      <div style={{ padding: '0 2rem 4rem 2rem' }}>
-        <h2 className="section-heading">
-            Latest Market News
-        </h2>
+      <div className="section-container" style={{paddingTop: 0, paddingBottom: 0}}>
+        <h2 className="section-heading">Latest Market News</h2>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}><NewsFeedWidget /></div>
       </div>
-
-      <div style={{ padding: '0 2rem 4rem 2rem' }}>
-        <h2 className="section-heading">
-            What Our Users Say
-        </h2>
+      <div className="section-container">
+        <h2 className="section-heading">What Our Users Say</h2>
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2rem' }}>
           {testimonials.map((testimonial) => (<TestimonialCard key={testimonial.name} name={testimonial.name} country={testimonial.country} flag={testimonial.flag} comment={testimonial.comment} imageUrl={testimonial.imageUrl} />))}
         </div>
       </div>
-
-      <ActivityPopup
-        isVisible={isVisible}
-        name={currentPopup.name}
-        amount={currentPopup.amount}
-        plan={currentPopup.plan}
-      />
+      <ActivityPopup isVisible={isVisible} name={currentPopup.name} amount={currentPopup.amount} plan={currentPopup.plan} />
     </div>
   );
 }
