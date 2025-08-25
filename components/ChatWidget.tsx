@@ -16,73 +16,68 @@ export default function ChatWidget() {
 
   const scrollToBottom = () => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); };
 
-  // This useEffect now correctly handles realtime updates by simply re-fetching
+  // This is the new, robust useEffect with Polling.
   useEffect(() => {
-    let channel: any;
-    const fetchAndSubscribe = async () => {
+    let interval: NodeJS.Timeout;
+
+    const setupChat = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) return;
       setUser(session.user);
 
       // Function to get the latest messages
       const fetchMessages = async () => {
+        if (!session.user) return;
         const { data } = await supabase.from('messages').select('*').eq('user_id', session.user.id).order('created_at');
         setMessages(data || []);
       };
 
-      // Fetch initial messages
+      // 1. Fetch initial messages
       fetchMessages();
 
-      // Set up a listener that re-fetches messages on ANY change
-      channel = supabase.channel(`public:messages:user_id=eq.${session.user.id}`)
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'messages', filter: `user_id=eq.${session.user.id}` },
-          () => fetchMessages() // This is simpler and more reliable
-        ).subscribe();
+      // 2. Start polling every 3 seconds to get new messages from the admin
+      interval = setInterval(fetchMessages, 3000);
     };
-    fetchAndSubscribe();
-    return () => { if (channel) supabase.removeChannel(channel); };
+
+    setupChat();
+
+    // Cleanup function to stop polling when the component is closed
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
   }, []);
 
   useEffect(scrollToBottom, [messages]);
 
   const onEmojiClick = (emojiObject: any) => { setNewMessage(prev => prev + emojiObject.emoji); setShowPicker(false); };
 
-  // Optimistic UI for Deletion (this was correct)
+  // OPTIMISTIC UI: Deletion is INSTANT
   const handleDeleteMessage = async (messageId: number) => {
     setMessages(currentMessages => currentMessages.filter(msg => msg.id !== messageId));
     await supabase.from('messages').delete().eq('id', messageId);
   };
 
-  // --- NEW, ROBUST SEND MESSAGE FUNCTION WITH OPTIMISTIC UI ---
+  // OPTIMISTIC UI: Sending is INSTANT
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     const messageContent = newMessage.trim();
     if (messageContent === '' || !user) return;
 
-    // 1. Clear the input field immediately
-    setNewMessage('');
-    setShowPicker(false);
-
-    // 2. Create a temporary message to display INSTANTLY
     const optimisticMessage: Message = {
-      id: Date.now(), // Use a temporary unique ID
+      id: Date.now(),
       content: messageContent,
       sent_by_admin: false,
       user_id: user.id,
       created_at: new Date().toISOString(),
     };
 
-    // 3. Add the temporary message to the screen
     setMessages(currentMessages => [...currentMessages, optimisticMessage]);
+    setNewMessage('');
+    setShowPicker(false);
 
-    // 4. In the background, send the real message to the database
-    // The realtime listener will automatically replace our temporary message
-    // with the real one from the database, but the user won't notice.
-    await supabase.from('messages').insert({ 
-      user_id: user.id, 
-      content: messageContent, 
-      sent_by_admin: false 
-    });
+    await supabase.from('messages').insert({ user_id: user.id, content: messageContent, sent_by_admin: false });
   };
 
   if (!user) return null;
