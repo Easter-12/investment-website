@@ -7,6 +7,12 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'i.pravatar.cc',
       },
+      // --- ADD THIS NEW BLOCK ---
+      {
+        protocol: 'https',
+        hostname: 'wedvnqodumsnpxjposa.supabase.co', // Your specific Supabase hostname
+      },
+      // --- END OF NEW BLOCK ---
     ],
   },
 }
