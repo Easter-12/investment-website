@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import Image from 'next/image';
 import Picker from 'emoji-picker-react';
-import supportAvatar from '../public/support-avatar.jpg'; // Import the new avatar
+import supportAvatar from '../public/support-avatar.jpg';
 
 type Message = { id: number; created_at: string; content: string | null; image_url: string | null; sent_by_admin: boolean; is_deleted: boolean; user_id: string; };
 
@@ -18,26 +18,17 @@ export default function ChatWidget() {
 
   const scrollToBottom = () => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); };
 
-  // This is the new, robust useEffect for fetching data and subscribing to realtime.
   useEffect(() => {
     let channel: any;
-
     const setupChat = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         setUser(session.user);
-
-        // Fetch initial messages
-        const { data: initialMessages } = await supabase
-          .from('messages').select('*').eq('user_id', session.user.id).order('created_at');
+        const { data: initialMessages } = await supabase.from('messages').select('*').eq('user_id', session.user.id).order('created_at');
         setMessages(initialMessages || []);
-
-        // **CRITICAL:** Set up the subscription AFTER the user is confirmed.
-        channel = supabase
-          .channel(`public:messages:user_id=eq.${session.user.id}`)
+        channel = supabase.channel(`public:messages:user_id=eq.${session.user.id}`)
           .on('postgres_changes', { event: '*', schema: 'public', table: 'messages', filter: `user_id=eq.${session.user.id}` },
             (payload) => {
-              console.log('New message received from Supabase:', payload); // For debugging
               setMessages(currentMessages => {
                 const existingMsgIndex = currentMessages.findIndex(msg => msg.id === (payload.new as Message).id);
                 if (existingMsgIndex > -1) {
@@ -52,20 +43,12 @@ export default function ChatWidget() {
           ).subscribe();
       }
     };
-
     setupChat();
-
-    // Cleanup function to unsubscribe when the component is removed
-    return () => {
-      if (channel) {
-        supabase.removeChannel(channel);
-      }
-    };
+    return () => { if (channel) { supabase.removeChannel(channel); } };
   }, []);
 
   useEffect(scrollToBottom, [messages]);
 
-  // --- All other functions (handleSendMessage, handleDelete, etc.) remain the same ---
   const onEmojiClick = (emojiObject: any) => { setNewMessage(prev => prev + emojiObject.emoji); setShowPicker(false); };
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files || !user) return;
@@ -91,7 +74,6 @@ export default function ChatWidget() {
   return (
     <>
       <div style={{ position: 'fixed', bottom: '100px', right: '20px', width: '350px', height: '500px', backgroundColor: '#1e293b', borderRadius: '12px', boxShadow: '0 5px 15px rgba(0,0,0,0.3)', display: 'flex', flexDirection: 'column', transition: 'transform 0.3s, opacity 0.3s', transform: isOpen ? 'translateY(0)' : 'translateY(20px)', opacity: isOpen ? 1 : 0, pointerEvents: isOpen ? 'auto' : 'none', zIndex: 1000 }}>
-        {/* --- NEW HEADER WITH AVATAR AND ONLINE STATUS --- */}
         <div style={{ padding: '1rem', borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <Image src={supportAvatar} alt="Support" width={40} height={40} style={{ borderRadius: '50%' }} />
           <div>
@@ -102,7 +84,6 @@ export default function ChatWidget() {
             </div>
           </div>
         </div>
-        {/* The rest of the component is the same */}
         <div style={{ flex: 1, padding: '1rem', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
           {messages.map(msg => (
             <div key={msg.id} style={{ display: 'flex', justifyContent: msg.sent_by_admin ? 'flex-start' : 'flex-end', marginBottom: '0.5rem', flexShrink: 0 }}>
@@ -119,12 +100,13 @@ export default function ChatWidget() {
           <input type="file" ref={fileInputRef} onChange={handleImageUpload} style={{ display: 'none' }} accept="image/*" />
           <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading} style={{ padding: '0.5rem', border: 'none', borderRadius: '8px', background: 'none', color: 'white', cursor: 'pointer', fontSize: '1.2rem'}}>📎</button>
           <button type="button" onClick={() => setShowPicker(val => !val)} style={{ padding: '0.5rem', border: 'none', borderRadius: '8px', background: 'none', color: 'white', cursor: 'pointer', fontSize: '1.2rem'}}>😊</button>
-          <input type="text" value={newMessage} onChange={(e) => setNewMessage(e.g.target.value)} placeholder={uploading ? "Uploading..." : "Type a message..."} disabled={uploading} style={{ flex: 1, padding: '0.75rem', border: 'none', borderRadius: '8px', backgroundColor: '#374151', color: 'white' }} />
+          {/* --- THIS IS THE FIXED LINE --- */}
+          <input type="text" value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder={uploading ? "Uploading..." : "Type a message..."} disabled={uploading} style={{ flex: 1, padding: '0.75rem', border: 'none', borderRadius: '8px', backgroundColor: '#374151', color: 'white' }} />
           <button type="submit" disabled={!newMessage.trim() || uploading} style={{ padding: '0.75rem 1rem', border: 'none', borderRadius: '8px', backgroundColor: '#22d3ee', color: '#111827', cursor: 'pointer' }}>Send</button>
         </form>
       </div>
       <button onClick={() => setIsOpen(!isOpen)} style={{ position: 'fixed', bottom: '20px', right: '20px', width: '60px', height: '60px', borderRadius: '50%', backgroundColor: '#22d3ee', border: 'none', boxShadow: '0 2px 10px rgba(0,0,0,0.2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1001 }}>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
       </button>
     </>
   );
