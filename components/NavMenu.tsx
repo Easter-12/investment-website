@@ -1,34 +1,67 @@
-import Link from 'next/link'; // Step 1: We import the special Link component
+import Link from 'next/link';
+import { supabase } from '../lib/supabaseClient';
+import { useRouter } from 'next/router';
 
-export default function NavMenu() {
+export default function NavMenu({ session }: { session: any }) {
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    // After signing out, redirect to the homepage
+    router.push('/');
+  };
+
   return (
     <div style={{
-      position: 'absolute',
-      top: '70px',
-      right: '2rem',
-      backgroundColor: '#1e293b',
-      borderRadius: '8px',
-      border: '1px solid #334155',
-      padding: '1rem',
-      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-      zIndex: 100
+      position: 'absolute', top: '70px', right: '1.5rem',
+      backgroundColor: '#1e293b', borderRadius: '8px',
+      border: '1px solid #334155', padding: '0.5rem',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)', zIndex: 100
     }}>
       <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-
-        {/* Step 2: We wrap the "Sign Up" button in a Link component */}
-        <Link href="/signup">
-          <li style={{ padding: '0.75rem 1.5rem', cursor: 'pointer', color: 'white' }}>
-            Sign Up
-          </li>
-        </Link>
-
-        {/* We will also add a link for the Login button for the future */}
-        <Link href="/login">
-          <li style={{ padding: '0.75rem 1.5rem', cursor: 'pointer', color: 'white' }}>
-            Login
-          </li>
-        </Link>
-
+        {/* If the user IS logged in, show these options */}
+        {session ? (
+          <>
+            <li>
+              <Link href="/dashboard">
+                <div style={{ padding: '0.75rem 1.5rem', cursor: 'pointer', color: 'white' }}>
+                  Dashboard
+                </div>
+              </Link>
+            </li>
+            <li>
+              <Link href="/profile">
+                <div style={{ padding: '0.75rem 1.5rem', cursor: 'pointer', color: 'white' }}>
+                  Profile Settings
+                </div>
+              </Link>
+            </li>
+            <li>
+              {/* This is not a link, it's a button that calls the handleSignOut function */}
+              <div onClick={handleSignOut} style={{ padding: '0.75rem 1.5rem', cursor: 'pointer', color: '#f87171' }}>
+                Sign Out
+              </div>
+            </li>
+          </>
+        ) : (
+          /* If the user is NOT logged in, show these options */
+          <>
+            <li>
+              <Link href="/signup">
+                <div style={{ padding: '0.75rem 1.5rem', cursor: 'pointer', color: 'white' }}>
+                  Sign Up
+                </div>
+              </Link>
+            </li>
+            <li>
+              <Link href="/login">
+                <div style={{ padding: '0.75rem 1.5rem', cursor: 'pointer', color: 'white' }}>
+                  Login
+                </div>
+              </Link>
+            </li>
+          </>
+        )}
       </ul>
     </div>
   );

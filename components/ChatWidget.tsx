@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabaseClient';
 import Image from 'next/image';
 import Picker from 'emoji-picker-react';
 import supportAvatar from '../public/support-avatar.jpg';
-// We no longer need to import the logo
+// The broken import for 'logo.gif' has been completely removed.
 
 type Message = { id: number; content: string | null; sent_by_admin: boolean; user_id: string; };
 
@@ -13,7 +13,14 @@ export default function ChatWidget() {
   const [newMessage, setNewMessage] = useState('');
   const [user, setUser] = useState<any>(null);
   const [showPicker, setShowPicker] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
+
+  useEffect(() => {
+    const showTimer = setTimeout(() => { setShowWelcome(true); }, 3000);
+    const hideTimer = setTimeout(() => { setShowWelcome(false); }, 10000);
+    return () => { clearTimeout(showTimer); clearTimeout(hideTimer); };
+  }, []);
 
   const scrollToBottom = () => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); };
 
@@ -58,8 +65,7 @@ export default function ChatWidget() {
   return (
     <>
       <div className={`chat-window ${isOpen ? 'open' : ''}`}>
-        {/* ... (The inner part of the chat window is the same) ... */}
-        <div className="chat-header" style={{ borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+        <div className="chat-header" style={{ borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0, backgroundColor: '#1e293b' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <Image src={supportAvatar} alt="Support" width={40} height={40} style={{ borderRadius: '50%' }} />
             <div>
@@ -76,16 +82,22 @@ export default function ChatWidget() {
           <div ref={messagesEndRef} />
         </div>
         {showPicker && <div style={{position: 'absolute', bottom: '70px', right: '10px', zIndex: 1001}}><Picker onEmojiClick={onEmojiClick} /></div>}
-        <form onSubmit={handleSendMessage} className="chat-form" style={{ borderTop: '1px solid #334155', flexShrink: 0 }}>
+        <form onSubmit={handleSendMessage} className="chat-form" style={{ borderTop: '1px solid #334155', flexShrink: 0, backgroundColor: '#1e293b' }}>
           <button type="button" onClick={() => setShowPicker(val => !val)} className="chat-button" style={{ background: 'none', border: 'none', borderRadius: '8px', color: 'white', cursor: 'pointer'}}>😊</button>
           <input type="text" value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder="Type a message..." className="chat-input" style={{ flex: 1, border: 'none', borderRadius: '8px', backgroundColor: '#374151', color: 'white' }} />
           <button type="submit" disabled={!newMessage.trim()} className="chat-send-button" style={{ border: 'none', borderRadius: '8px', backgroundColor: '#22d3ee', color: '#111827', cursor: 'pointer', fontWeight: 'bold' }}>Send</button>
         </form>
       </div>
 
+      {showWelcome && !isOpen && (
+        <div style={{ position: 'fixed', bottom: '100px', right: '20px', backgroundColor: '#1e293b', padding: '1rem', borderRadius: '8px', color: 'white', boxShadow: '0 4px 12px rgba(0,0,0,0.3)', zIndex: 1000, transition: 'opacity 0.5s' }}>
+          We are online! How can we help?
+        </div>
+      )}
+
       {!isOpen && (
-        // --- THIS IS THE CHANGED PART ---
-        // We are back to using the simple SVG icon and the original CSS class
+        // --- THIS IS THE CORRECTED PART ---
+        // We are back to using the simple SVG icon
         <button onClick={() => setIsOpen(true)} className="chat-bubble" style={{backgroundColor: '#22d3ee'}}>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
