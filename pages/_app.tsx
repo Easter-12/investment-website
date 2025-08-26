@@ -17,9 +17,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         <link rel="manifest" href="/site.webmanifest?v=2" />
         <link rel="shortcut icon" href="/favicon.ico?v=2" />
 
-        {/* --- NEW: IMPORTING THE PROFESSIONAL FONT --- */}
+        {/* --- THIS IS THE CORRECTED PART --- */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
       </Head>
 
