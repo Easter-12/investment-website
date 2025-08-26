@@ -1,0 +1,75 @@
+.container {
+  background-color: #111827;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two columns on desktop */
+  gap: 2rem;
+  align-items: start;
+}
+
+.titleBlock {
+  grid-column: 1 / -1; /* Make title span both columns */
+  margin-bottom: 1rem;
+}
+
+.titleLabel {
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.titleHeading {
+  text-align: left;
+  margin: 0;
+}
+
+.statsGrid {
+  grid-column: 1 / -1; /* Make stats span both columns */
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two stat boxes side-by-side */
+  gap: 1rem;
+}
+
+.statBox {
+  border: 2px solid #10b981;
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.statNumber {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #10b981;
+  margin: 0;
+}
+
+.statLabel {
+  color: #9ca3af;
+  margin: 0.25rem 0 0 0;
+}
+
+.featuresGrid {
+  grid-column: 1 / -1; /* Make features span both columns */
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two feature boxes per row */
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* --- THIS IS THE GUARANTEED MOBILE FIX --- */
+@media (max-width: 768px) {
+  .grid, .featuresGrid {
+    grid-template-columns: 1fr; /* Stack everything in a single column */
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr; /* Stack the two green stat boxes */
+  }
+
+  .statNumber {
+    font-size: 2rem; /* Make numbers slightly smaller */
+  }
+}
