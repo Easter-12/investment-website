@@ -1,63 +1,83 @@
 import React, { useEffect, useRef } from 'react';
 
-// --- CHANGE 1: Define a type for the TradingView object ---
-// This tells TypeScript what the TradingView object will look like once it's loaded.
 declare global {
   interface Window {
     TradingView: any;
   }
 }
 
-let tvScriptLoadingPromise;
+let tvScriptLoadingPromise: Promise<void> | undefined;
 
-export default function TradingViewWidget({ symbol, containerId }) {
-  const onLoadScriptRef = useRef(null); // This fix was correct
+export default function TradingViewWidget({ symbol, containerId }: { symbol: string; containerId: string; }) {
+  const onLoadScriptRef = useRef<(() => void) | "loaded" | null>(null);
 
-  useEffect(
-    () => {
-      onLoadScriptRef.current = createWidget;
+  useEffect(() => {
+    if (onLoadScriptRef.current === "loaded") {
+      return;
+    }
 
-      if (!tvScriptLoadingPromise) {
-        tvScriptLoadingPromise = new Promise((resolve) => {
-          const script = document.createElement('script');
-          script.id = 'tradingview-widget-loading-script';
-          script.src = 'https://s3.tradingview.com/tv.js';
-          script.type = 'text/javascript';
-          script.onload = resolve;
-          document.head.appendChild(script);
+    onLoadScriptRef.current = createWidget;
+
+    if (!tvScriptLoadingPromise) {
+      tvScriptLoadingPromise = new Promise((resolve) => {
+        const script = document.createElement('script');
+        script.id = 'tradingview-widget-loading-script';
+        script.src = 'https://s3.tradingview.com/tv.js';
+        script.type = 'text/javascript';
+        script.onload = () => resolve();
+        document.head.appendChild(script);
+      });
+    }
+
+    tvScriptLoadingPromise.then(() => {
+      if (onLoadScriptRef.current === createWidget) {
+        onLoadScriptRef.current();
+      }
+    });
+
+    return () => {
+      onLoadScriptRef.current = null;
+    };
+
+    function createWidget() {
+      if (document.getElementById(containerId) && typeof window.TradingView !== 'undefined') {
+        new window.TradingView.widget({
+          autosize: true,
+          symbol: symbol,
+          interval: "1",
+          timezone: "Etc/UTC",
+          theme: "dark",
+          style: "1",
+          locale: "en",
+          toolbar_bg: "#f1f3f6", // This will be hidden but is good practice to set
+          enable_publishing: false,
+          hide_top_toolbar: true, // Hides the top bar with drawing tools
+          hide_bottom_toolbar: true, // Hides the bottom bar with the logo
+          allow_symbol_change: false, // Prevents user from changing the symbol
+          container_id: containerId,
         });
+        onLoadScriptRef.current = "loaded";
       }
-
-      tvScriptLoadingPromise.then(() => onLoadScriptRef.current && onLoadScriptRef.current());
-
-      return () => { onLoadScriptRef.current = null; };
-
-      function createWidget() {
-        // --- CHANGE 2: Check if TradingView exists on window BEFORE using it ---
-        if (document.getElementById(containerId) && typeof window.TradingView !== 'undefined') {
-          new window.TradingView.widget({
-            autosize: true,
-            symbol: symbol,
-            interval: "D",
-            timezone: "Etc/UTC",
-            theme: "dark",
-            style: "1",
-            locale: "en",
-            enable_publishing: false,
-            hide_top_toolbar: true,
-            hide_legend: true,
-            save_image: false,
-            container_id: containerId
-          });
-        }
-      }
-    },
-    [symbol, containerId]
-  );
+    }
+  }, [symbol, containerId]);
 
   return (
-    <div style={{ height: "100%", width: "100%" }}>
+    // Step 1: Add a parent container with position: 'relative'
+    <div style={{ height: "100%", width: "100%", position: 'relative' }}>
+      {/* The TradingView chart will be placed here */}
       <div id={containerId} style={{ height: "100%", width: "100%" }} />
+
+      {/* --- THIS IS THE GUARANTEED FIX --- */}
+      {/* Step 2: Add the invisible overlay */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 10, // Make sure it's on top of the chart
+        cursor: 'default', // Show a normal cursor, not a link cursor
+      }}></div>
     </div>
   );
 }

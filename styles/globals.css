@@ -178,3 +178,23 @@ body {
     padding: 0.75rem 1rem;
   }
 }
+/* Add this to the bottom of your globals.css file */
+
+/* --- NEW PROFESSIONAL CHAT STYLES --- */
+
+.chat-messages-area {
+  /* This creates a subtle, high-tech grid background */
+  background-color: #111827; /* Fallback color */
+  background-image: 
+    linear-gradient(rgba(55, 65, 81, 0.5) 1px, transparent 1px),
+    linear-gradient(to right, rgba(55, 65, 81, 0.5) 1px, #111827 1px);
+  background-size: 2rem 2rem;
+}
+
+.chat-bubble {
+  /* We will make the bubble a bit larger to house the logo */
+  width: 70px;
+  height: 70px;
+  /* Remove the old color, the logo will be the color */
+  background-color: transparent;
+}
