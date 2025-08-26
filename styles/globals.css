@@ -342,29 +342,3 @@ body {
     border-radius: 0;
   }
 }
-/* Add this to the bottom of your globals.css file */
-
-/* --- DEFINITIVE GOOGLE TRANSLATE FIX --- */
-
-/* This is the main container that Google creates */
-#google_translate_element {
-  position: fixed;
-  top: 70px; /* Position it just below the header */
-  right: 1.5rem;
-  z-index: 100;
-  background-color: #1e293b;
-  border-radius: 8px;
-  border: 1px solid #334155;
-  padding: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  display: none; /* It starts hidden */
-}
-
-/* This is the dropdown menu itself */
-#google_translate_element select {
-  background-color: #374151;
-  color: white;
-  border: none;
-  padding: 0.5rem;
-  border-radius: 4px;
-}
