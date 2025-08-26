@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import TradingViewWidget from '../components/TradingViewWidget';
 import NewsFeedWidget from '../components/NewsFeedWidget';
 import TestimonialCard from '../components/TestimonialCard';
+// ActivityPopup is the news ticker, which is different from the ChatWidget.
 import ActivityPopup from '../components/ActivityPopup';
 import TechImage from '../components/TechImage';
 import HowItWorks from '../components/HowItWorks';
 import FadeInSection from '../components/FadeInSection';
 import TrustSection from '../components/TrustSection';
 
-// ... (all the data lists like allTestimonials, plans, amounts stay the same)
+// ... (all data lists like allTestimonials remain the same)
 const allTestimonials = [ { name: 'Sarah J.', country: 'USA', flag: '🇺🇸', comment: 'This platform is a game-changer! My portfolio has never looked better.', imageUrl: 'https://i.pravatar.cc/150?img=1' }, { name: 'Kenji T.', country: 'Japan', flag: '🇯🇵', comment: 'The user interface is clean and the live data is incredibly fast.', imageUrl: 'https://i.pravatar.cc/150?img=5' }, { name: 'Maria G.', country: 'Germany', flag: '🇩🇪', comment: 'Excellent customer support and a wide variety of investment plans.', imageUrl: 'https://i.pravatar.cc/150?img=3' }, { name: 'David L.', country: 'Australia', flag: '🇦🇺', comment: 'I was new to investing, but this platform made it easy to get started.', imageUrl: 'https://i.pravatar.cc/150?img=7' }, { name: 'Fatima A.', country: 'UAE', flag: '🇦🇪', comment: 'The ROI on the Platinum Plan has exceeded all my expectations.', imageUrl: 'https://i.pravatar.cc/150?img=8' }, { name: 'Carlos R.', country: 'Brazil', flag: '🇧🇷', comment: 'QuantumLeap has provided consistent returns and their support team is always helpful.', imageUrl: 'https://i.pravatar.cc/150?img=11' }, { name: 'Chloe B.', country: 'France', flag: '🇫🇷', comment: 'Secure, reliable, and profitable. What more could you ask for in an investment platform?', imageUrl: 'https://i.pravatar.cc/150?img=12' }, { name: 'Wei Z.', country: 'China', flag: '🇨🇳', comment: 'The market analysis tools are incredibly insightful.', imageUrl: 'https://i.pravatar.cc/150?img=14' }, { name: 'Olivia P.', country: 'Canada', flag: '🇨🇦', comment: 'I have tried many platforms, and this is by far the most user-friendly and effective.', imageUrl: 'https://i.pravatar.cc/150?img=15' }, ];
 const plans = ['Silver', 'Gold', 'Platinum', 'Diamond'];
 const amounts = [500, 1200, 2500, 5000, 10000, 750, 15000];
@@ -23,44 +24,26 @@ export default function HomePage() {
 
   return (
     <div style={{ backgroundColor: '#111827', color: 'white', overflowX: 'hidden' }}>
-      {/* --- THIS IS THE NEW VIDEO HERO SECTION --- */}
-      <div className="hero-section" style={{ padding: 0, height: '80vh', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            transform: 'translate(-50%, -50%)',
-            zIndex: 0,
-            filter: 'brightness(0.5)' // Darken the video to make text readable
-          }}
-        >
+      <div className="hero-section">
+        <video autoPlay loop muted playsInline className="hero-video">
           <source src="/hero-video.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
         </video>
-        <div style={{ zIndex: 1, textAlign: 'center' }}>
+        <div className="hero-overlay"></div>
+        <div className="hero-content">
           <h1 className="hero-heading">A Simpler Way to Succeed</h1>
-          <p className="hero-subheading" style={{ maxWidth: '600px', margin: '0 auto' }}>
+          <p className="hero-subheading">
             For over a decade, we have simplified the journey to wealth creation and preservation, empowering individuals to achieve sustainable financial growth.
           </p>
         </div>
       </div>
 
-      {/* The rest of your page content remains the same */}
       <FadeInSection><HowItWorks /></FadeInSection>
       <FadeInSection><TechImage /></FadeInSection>
       <FadeInSection><TrustSection /></FadeInSection>
-      <FadeInSection><div className="section-container">...</div></FadeInSection>
-      {/* (I have shortened the rest of the page for clarity, but use the full code) */}
-      <div className="section-container">
-        <div className="content-wrapper">
+
+      <FadeInSection>
+        <div className="section-container">
+          <div className="content-wrapper">
             <h2 className="section-heading">Live Market Overview</h2>
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2rem' }}>
                 <div style={{ height: '400px', width: '100%', maxWidth: '550px' }}><TradingViewWidget symbol="BINANCE:BTCUSDT" containerId="tradingview_chart_1" /></div>
@@ -68,23 +51,31 @@ export default function HomePage() {
                 <div style={{ height: '400px', width: '100%', maxWidth: '550px' }}><TradingViewWidget symbol="BINANCE:SOLUSDT" containerId="tradingview_chart_3" /></div>
                 <div style={{ height: '400px', width: '100%', maxWidth: '550px' }}><TradingViewWidget symbol="BINANCE:XRPUSDT" containerId="tradingview_chart_4" /></div>
             </div>
+          </div>
         </div>
-      </div>
-      <div className="section-container" style={{paddingTop: 0, paddingBottom: 0}}>
-        <div className="content-wrapper">
+      </FadeInSection>
+
+      <FadeInSection>
+        <div className="section-container" style={{paddingTop: 0, paddingBottom: 0}}>
+          <div className="content-wrapper">
             <h2 className="section-heading">Latest Market News</h2>
             <div style={{ maxWidth: '800px', margin: '0 auto' }}><NewsFeedWidget /></div>
+          </div>
         </div>
-      </div>
-      <div className="section-container">
-        <div className="content-wrapper">
+      </FadeInSection>
+
+      <FadeInSection>
+        <div className="section-container">
+          <div className="content-wrapper">
             <h2 className="section-heading">What Our Users Say</h2>
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '2rem' }}>
               {dailyTestimonials.map((testimonial: any) => (<TestimonialCard key={testimonial.name} name={testimonial.name} country={testimonial.country} flag={testimonial.flag} comment={testimonial.comment} imageUrl={testimonial.imageUrl} />))}
             </div>
+          </div>
         </div>
-      </div>
+      </FadeInSection>
 
+      {/* The ChatWidget is NO LONGER HERE. The ActivityPopup (news ticker) remains. */}
       {currentInvestment.name && ( <ActivityPopup name={currentInvestment.name} amount={currentInvestment.amount} plan={currentInvestment.plan} /> )}
     </div>
   );

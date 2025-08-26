@@ -1,13 +1,13 @@
 import Link from 'next/link';
 import { supabase } from '../lib/supabaseClient';
 import { useRouter } from 'next/router';
+import Script from 'next/script'; // THIS IS THE MISSING LINE THAT FIXES THE ERROR
 
 export default function NavMenu({ session }: { session: any }) {
   const router = useRouter();
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    // After signing out, redirect to the homepage
     router.push('/');
   };
 
@@ -19,50 +19,41 @@ export default function NavMenu({ session }: { session: any }) {
       boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)', zIndex: 100
     }}>
       <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-        {/* If the user IS logged in, show these options */}
         {session ? (
           <>
-            <li>
-              <Link href="/dashboard">
-                <div style={{ padding: '0.75rem 1.5rem', cursor: 'pointer', color: 'white' }}>
-                  Dashboard
-                </div>
-              </Link>
-            </li>
-            <li>
-              <Link href="/profile">
-                <div style={{ padding: '0.75rem 1.5rem', cursor: 'pointer', color: 'white' }}>
-                  Profile Settings
-                </div>
-              </Link>
-            </li>
-            <li>
-              {/* This is not a link, it's a button that calls the handleSignOut function */}
-              <div onClick={handleSignOut} style={{ padding: '0.75rem 1.5rem', cursor: 'pointer', color: '#f87171' }}>
-                Sign Out
-              </div>
-            </li>
+            <li><Link href="/dashboard"><div style={{ padding: '0.75rem 1.5rem', cursor: 'pointer', color: 'white' }}>Dashboard</div></Link></li>
+            <li><Link href="/profile"><div style={{ padding: '0.75rem 1.5rem', cursor: 'pointer', color: 'white' }}>Profile Settings</div></Link></li>
           </>
         ) : (
-          /* If the user is NOT logged in, show these options */
           <>
-            <li>
-              <Link href="/signup">
-                <div style={{ padding: '0.75rem 1.5rem', cursor: 'pointer', color: 'white' }}>
-                  Sign Up
-                </div>
-              </Link>
-            </li>
-            <li>
-              <Link href="/login">
-                <div style={{ padding: '0.75rem 1.5rem', cursor: 'pointer', color: 'white' }}>
-                  Login
-                </div>
-              </Link>
-            </li>
+            <li><Link href="/signup"><div style={{ padding: '0.75rem 1.5rem', cursor: 'pointer', color: 'white' }}>Sign Up</div></Link></li>
+            <li><Link href="/login"><div style={{ padding: '0.75rem 1.5rem', cursor: 'pointer', color: 'white' }}>Login</div></Link></li>
           </>
         )}
+
+        <li style={{ padding: '0.75rem 1.5rem' }}>
+            <div id="google_translate_element_nav"></div>
+        </li>
+
+        {session && (
+          <li>
+            <div onClick={handleSignOut} style={{ padding: '0.75rem 1.5rem', cursor: 'pointer', color: '#f87171', borderTop: '1px solid #334155', marginTop: '0.5rem' }}>
+              Sign Out
+            </div>
+          </li>
+        )}
       </ul>
+      <Script id="move-google-translate" strategy="lazyOnload">
+        {`
+            const gtElement = document.getElementById('google_translate_element');
+            const navElement = document.getElementById('google_translate_element_nav');
+            if (gtElement && navElement && gtElement.firstChild) {
+                if (!navElement.hasChildNodes()) {
+                    navElement.appendChild(gtElement.firstChild);
+                }
+            }
+        `}
+      </Script>
     </div>
   );
 }
