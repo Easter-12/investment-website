@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { supabase } from '../lib/supabaseClient';
 import { useRouter } from 'next/router';
-import Script from 'next/script'; // THIS IS THE MISSING LINE THAT FIXES THE ERROR
+import Script from 'next/script';
 
 export default function NavMenu({ session }: { session: any }) {
   const router = useRouter();
@@ -12,6 +12,7 @@ export default function NavMenu({ session }: { session: any }) {
   };
 
   return (
+    // --- THIS IS THE CORRECTED LINE ---
     <div style={{
       position: 'absolute', top: '70px', right: '1.5rem',
       backgroundColor: '#1e293b', borderRadius: '8px',
@@ -31,7 +32,7 @@ export default function NavMenu({ session }: { session: any }) {
           </>
         )}
 
-        <li style={{ padding: '0.75rem 1.5rem' }}>
+        <li style={{ padding: '0.75rem 1.5rem', borderTop: '1px solid #334155', marginTop: '0.5rem' }}>
             <div id="google_translate_element_nav"></div>
         </li>
 
@@ -43,6 +44,7 @@ export default function NavMenu({ session }: { session: any }) {
           </li>
         )}
       </ul>
+
       <Script id="move-google-translate" strategy="lazyOnload">
         {`
             const gtElement = document.getElementById('google_translate_element');
