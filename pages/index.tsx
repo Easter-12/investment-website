@@ -5,9 +5,10 @@ import TestimonialCard from '../components/TestimonialCard';
 import ActivityPopup from '../components/ActivityPopup';
 import TechImage from '../components/TechImage';
 import HowItWorks from '../components/HowItWorks';
-import FadeInSection from '../components/FadeInSection'; // Import our new animation component
+import FadeInSection from '../components/FadeInSection';
+import TrustSection from '../components/TrustSection'; // 1. Import the new component
 
-// ... (allTestimonials and fakeInvestments data stays the same)
+// ... (all the data lists like allTestimonials, plans, amounts stay the same)
 const allTestimonials = [ { name: 'Sarah J.', country: 'USA', flag: '🇺🇸', comment: 'This platform is a game-changer! My portfolio has never looked better.', imageUrl: 'https://i.pravatar.cc/150?img=1' }, { name: 'Kenji T.', country: 'Japan', flag: '🇯🇵', comment: 'The user interface is clean and the live data is incredibly fast.', imageUrl: 'https://i.pravatar.cc/150?img=5' }, { name: 'Maria G.', country: 'Germany', flag: '🇩🇪', comment: 'Excellent customer support and a wide variety of investment plans.', imageUrl: 'https://i.pravatar.cc/150?img=3' }, { name: 'David L.', country: 'Australia', flag: '🇦🇺', comment: 'I was new to investing, but this platform made it easy to get started.', imageUrl: 'https://i.pravatar.cc/150?img=7' }, { name: 'Fatima A.', country: 'UAE', flag: '🇦🇪', comment: 'The ROI on the Platinum Plan has exceeded all my expectations.', imageUrl: 'https://i.pravatar.cc/150?img=8' }, { name: 'Carlos R.', country: 'Brazil', flag: '🇧🇷', comment: 'QuantumLeap has provided consistent returns and their support team is always helpful.', imageUrl: 'https://i.pravatar.cc/150?img=11' }, { name: 'Chloe B.', country: 'France', flag: '🇫🇷', comment: 'Secure, reliable, and profitable. What more could you ask for in an investment platform?', imageUrl: 'https://i.pravatar.cc/150?img=12' }, { name: 'Wei Z.', country: 'China', flag: '🇨🇳', comment: 'The market analysis tools are incredibly insightful.', imageUrl: 'https://i.pravatar.cc/150?img=14' }, { name: 'Olivia P.', country: 'Canada', flag: '🇨🇦', comment: 'I have tried many platforms, and this is by far the most user-friendly and effective.', imageUrl: 'https://i.pravatar.cc/150?img=15' }, ];
 const plans = ['Silver', 'Gold', 'Platinum', 'Diamond'];
 const amounts = [500, 1200, 2500, 5000, 10000, 750, 15000];
@@ -21,7 +22,7 @@ export default function HomePage() {
   useEffect(() => { if (investors.length === 0) return; const interval = setInterval(() => { const randomInvestor = investors[Math.floor(Math.random() * investors.length)]; const randomAmount = amounts[Math.floor(Math.random() * amounts.length)]; const randomPlan = plans[Math.floor(Math.random() * plans.length)]; setCurrentInvestment({ name: randomInvestor.name, amount: randomAmount.toLocaleString(), plan: randomPlan, }); }, 5000); return () => clearInterval(interval); }, [investors]);
 
   return (
-    <div style={{ backgroundColor: '#111827', color: 'white', overflowX: 'hidden' }}> {/* Add overflowX to prevent horizontal scrollbars */}
+    <div style={{ backgroundColor: '#111827', color: 'white', overflowX: 'hidden' }}>
       <div className="hero-section">
         <h1 className="hero-heading">QuantumLeap Investments</h1>
         <p className="hero-subheading">Your future, secured. Real-time market data at your fingertips.</p>
@@ -52,6 +53,9 @@ export default function HomePage() {
           </div>
         </div>
       </FadeInSection>
+
+      {/* --- 2. PLACE THE NEW COMPONENT HERE --- */}
+      <FadeInSection><TrustSection /></FadeInSection>
 
       <FadeInSection>
         <div className="section-container">

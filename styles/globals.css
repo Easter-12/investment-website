@@ -1,12 +1,7 @@
-/* Add this to the TOP of your globals.css file */
-
-/* Apply the new professional font to the entire site */
+/* Apply the professional font to the entire site */
 html,
 body {
   font-family: 'Poppins', sans-serif;
-}
-/* This removes default browser margins, forcing an edge-to-edge layout */
-body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -14,32 +9,40 @@ body {
 
 /* Base styling for all screens */
 .hero-section {
-  text-align: center; padding: 6rem 1rem; /* A little padding for desktop */
+  text-align: center;
+  padding: 6rem 2rem;
+  /* Back to the original, clean background */
   background-color: #111827;
   background-image: radial-gradient(at 50% 30%, hsla(190, 80%, 30%, 0.4) 0px, transparent 50%),
                     radial-gradient(at 50% 70%, hsla(190, 80%, 20%, 0.3) 0px, transparent 50%);
 }
 .hero-heading {
-  font-size: 3.5rem; font-weight: bold; margin-bottom: 1rem; color: #22d3ee;
+  font-size: 3.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #22d3ee;
 }
 .hero-subheading {
-  font-size: 1.25rem; color: #d1d5db;
+  font-size: 1.25rem;
+  color: #d1d5db;
 }
 
 .section-container {
-  padding: 4rem 1rem; /* A little padding for desktop */
+  padding: 4rem 2rem;
 }
 .section-heading {
-  font-size: 2.5rem; font-weight: bold; text-align: center; margin-bottom: 2rem;
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 2rem;
 }
 .content-wrapper {
-  max-width: 1200px; /* Limits content width on very large screens */
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1rem; /* Internal padding for content */
+  padding: 0 1rem;
 }
 
-
-/* --- MOBILE STYLES (Screen width 768px or less) --- */
+/* Mobile styles */
 @media (max-width: 768px) {
   .hero-section {
     padding: 5rem 1rem;
@@ -50,205 +53,16 @@ body {
   .hero-subheading {
     font-size: 1.1rem;
   }
-  /* THIS IS THE KEY CHANGE: Remove side padding on the main sections */
   .section-container {
-    padding-left: 0;
-    padding-right: 0;
-    padding-top: 3rem;
-    padding-bottom: 3rem;
+    padding: 3rem 1rem;
   }
   .section-heading {
     font-size: 2rem;
-    padding: 0 1rem; /* Give the heading its own padding */
+    padding: 0 1rem;
   }
 }
 
-/* --- NEWS TICKER ANIMATION --- */
-@keyframes marquee {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
-}
-
-.ticker-wrap {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  overflow: hidden;
-  background-color: rgba(30, 41, 59, 0.9);
-  color: white;
-  z-index: 100;
-  padding: 1rem 0;
-  border-top: 1px solid #334155;
-  backdrop-filter: blur(5px);
-}
-
-.ticker-content {
-  display: inline-block;
-  white-space: nowrap;
-  animation: marquee 15s linear infinite;
-  padding-left: 100%;
-}
-.ticker-item {
-  display: inline-block;
-  padding: 0 2rem;
-  font-size: 1rem;
-}
-.ticker-highlight {
-  color: #67e8f9;
-  font-weight: bold;
-}
-/* Add this to the bottom of your globals.css file */
-
-/* --- STYLES FOR THE NEW CHAT WIDGET --- */
-.chat-bubble {
-  position: fixed; bottom: 20px; right: 20px;
-  width: 60px; height: 60px; border-radius: 50%;
-  background-color: #22d3ee; border: none;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-  cursor: pointer; display: flex;
-  align-items: center; justify-content: center;
-  z-index: 1001;
-}
-
-.chat-window {
-  position: fixed;
-  bottom: 100px;
-  right: 20px;
-  width: 370px;
-  height: 550px;
-  background-color: #1e293b;
-  border-radius: 12px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-  transform: translateY(20px);
-  opacity: 0;
-  pointer-events: none;
-  z-index: 1000;
-}
-
-.chat-window.open {
-  transform: translateY(0);
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* --- MOBILE-FIRST FULL SCREEN STYLES --- */
-@media (max-width: 768px) {
-  .chat-window {
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 0;
-  }
-}
-/* Add this to the bottom of your globals.css file */
-
-/* --- MOBILE-FIRST CHAT UI IMPROVEMENTS --- */
-@media (max-width: 768px) {
-  .chat-header {
-    padding: 0.75rem 1rem; /* Tighter header padding */
-  }
-  .chat-header h3 {
-    font-size: 1.1rem; /* Smaller header text */
-  }
-
-  .chat-messages-area {
-    padding: 0.5rem; /* Reduce padding around messages */
-  }
-
-  .chat-bubble {
-    padding: 0.5rem 0.75rem; /* Smaller chat bubbles */
-    font-size: 0.95rem; /* Slightly smaller text in bubbles */
-  }
-
-  .chat-form {
-    padding: 0.5rem; /* Tighter form padding */
-    gap: 0.5rem;
-  }
-
-  .chat-input {
-    padding: 0.75rem; /* Comfortable input size */
-  }
-
-  .chat-button {
-    padding: 0.75rem; /* Larger, easier to press buttons */
-    font-size: 1.2rem; /* Larger icon size */
-  }
-
-  .chat-send-button {
-    padding: 0.75rem 1rem;
-  }
-}
-/* Add this to the bottom of your globals.css file */
-
-/* --- NEW PROFESSIONAL CHAT STYLES --- */
-
-.chat-messages-area {
-  /* This creates a subtle, high-tech grid background */
-  background-color: #111827; /* Fallback color */
-  background-image: 
-    linear-gradient(rgba(55, 65, 81, 0.5) 1px, transparent 1px),
-    linear-gradient(to right, rgba(55, 65, 81, 0.5) 1px, #111827 1px);
-  background-size: 2rem 2rem;
-}
-
-.chat-bubble {
-  /* We will make the bubble a bit larger to house the logo */
-  width: 70px;
-  height: 70px;
-  /* Remove the old color, the logo will be the color */
-  background-color: transparent;
-}
-/* Add this to the bottom of your globals.css file */
-
-/* --- PROFESSIONAL CHAT BUBBLE REDESIGN --- */
-
-.message-wrapper {
-  display: flex;
-  margin-bottom: 1rem; /* More vertical space between messages */
-  max-width: 85%; /* Bubbles should not be excessively wide */
-}
-
-/* Aligns the entire row to the right for user messages */
-.user-message-wrapper {
-  align-self: flex-end;
-}
-
-/* Aligns the entire row to the left for admin messages */
-.admin-message-wrapper {
-  align-self: flex-start;
-}
-
-.chat-bubble-content {
-  padding: 0.75rem 1rem;
-  border-radius: 18px; /* Nicely rounded corners */
-  line-height: 1.4; /* Improves text readability */
-  word-wrap: break-word; /* Prevents long words from overflowing */
-}
-
-/* User's bubble style (on the right) */
-.user-bubble {
-  background-color: #22d3ee;
-  color: #111827;
-  /* This creates the "tail" on the bottom-right */
-  border-bottom-right-radius: 4px;
-}
-
-/* Admin's bubble style (on the left) */
-.admin-bubble {
-  background-color: #374151;
-  color: white;
-  /* This creates the "tail" on the bottom-left */
-  border-bottom-left-radius: 4px;
-}
-/* Add this to the BOTTOM of your globals.css file */
-
+/* Button styles */
 .pro-button {
   background-image: linear-gradient(to right, #22d3ee, #0f766e);
   color: white;
@@ -263,8 +77,29 @@ body {
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
-
 .pro-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(34, 211, 238, 0.3);
 }
+
+/* Chat styles */
+/* (You can leave the chat styles as they are, or I can provide the original if you prefer) */
+/* For now, I will include the chat styles from the previous successful version */
+.chat-bubble { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background-color: #22d3ee; border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.2); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 1001; }
+.chat-window { position: fixed; bottom: 100px; right: 20px; width: 370px; height: 550px; background-color: #1e293b; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); display: flex; flex-direction: column; transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; transform: translateY(20px); opacity: 0; pointer-events: none; z-index: 1000; }
+.chat-window.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+@media (max-width: 768px) { .chat-window { width: 100%; height: 100%; top: 0; left: 0; right: 0; bottom: 0; border-radius: 0; } }
+.chat-header { padding: 0.75rem 1rem; }
+.chat-header h3 { font-size: 1.1rem; }
+.chat-messages-area { padding: 0.5rem; }
+.chat-bubble { padding: 0.5rem 0.75rem; font-size: 0.95rem; }
+.chat-form { padding: 0.5rem; gap: 0.5rem; }
+.chat-input { padding: 0.75rem; }
+.chat-button { padding: 0.75rem; font-size: 1.2rem; }
+.chat-send-button { padding: 0.75rem 1rem; }
+.message-wrapper { display: flex; margin-bottom: 1rem; max-width: 85%; }
+.user-message-wrapper { align-self: flex-end; }
+.admin-message-wrapper { align-self: flex-start; }
+.chat-bubble-content { padding: 0.75rem 1rem; border-radius: 18px; line-height: 1.4; word-wrap: break-word; }
+.user-bubble { background-color: #22d3ee; color: #111827; border-bottom-right-radius: 4px; }
+.admin-bubble { background-color: #374151; color: white; border-bottom-left-radius: 4px; }
