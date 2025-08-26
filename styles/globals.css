@@ -1,3 +1,10 @@
+/* Add this to the TOP of your globals.css file */
+
+/* Apply the new professional font to the entire site */
+html,
+body {
+  font-family: 'Poppins', sans-serif;
+}
 /* This removes default browser margins, forcing an edge-to-edge layout */
 body {
   margin: 0;
@@ -197,4 +204,67 @@ body {
   height: 70px;
   /* Remove the old color, the logo will be the color */
   background-color: transparent;
+}
+/* Add this to the bottom of your globals.css file */
+
+/* --- PROFESSIONAL CHAT BUBBLE REDESIGN --- */
+
+.message-wrapper {
+  display: flex;
+  margin-bottom: 1rem; /* More vertical space between messages */
+  max-width: 85%; /* Bubbles should not be excessively wide */
+}
+
+/* Aligns the entire row to the right for user messages */
+.user-message-wrapper {
+  align-self: flex-end;
+}
+
+/* Aligns the entire row to the left for admin messages */
+.admin-message-wrapper {
+  align-self: flex-start;
+}
+
+.chat-bubble-content {
+  padding: 0.75rem 1rem;
+  border-radius: 18px; /* Nicely rounded corners */
+  line-height: 1.4; /* Improves text readability */
+  word-wrap: break-word; /* Prevents long words from overflowing */
+}
+
+/* User's bubble style (on the right) */
+.user-bubble {
+  background-color: #22d3ee;
+  color: #111827;
+  /* This creates the "tail" on the bottom-right */
+  border-bottom-right-radius: 4px;
+}
+
+/* Admin's bubble style (on the left) */
+.admin-bubble {
+  background-color: #374151;
+  color: white;
+  /* This creates the "tail" on the bottom-left */
+  border-bottom-left-radius: 4px;
+}
+/* Add this to the BOTTOM of your globals.css file */
+
+.pro-button {
+  background-image: linear-gradient(to right, #22d3ee, #0f766e);
+  color: white;
+  font-weight: bold;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  text-decoration: none;
+  display: inline-block;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.pro-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(34, 211, 238, 0.3);
 }

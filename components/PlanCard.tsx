@@ -1,5 +1,5 @@
 // This component displays one investment plan card
-export default function PlanCard({ plan }) {
+export default function PlanCard({ plan }: { plan: any }) {
   return (
     <div style={{
       backgroundColor: '#1e293b',
@@ -11,7 +11,8 @@ export default function PlanCard({ plan }) {
       textAlign: 'center',
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'space-between'
+      justifyContent: 'space-between',
+      boxShadow: '0 10px 25px rgba(0,0,0,0.3)' // Added a subtle shadow
     }}>
       <div>
         <h3 style={{ fontSize: '1.8rem', fontWeight: 'bold', color: '#22d3ee', margin: '0 0 1rem 0' }}>
@@ -40,11 +41,8 @@ export default function PlanCard({ plan }) {
         </div>
       </div>
 
-      <button style={{
-        backgroundColor: '#22d3ee', color: '#111827', fontWeight: 'bold',
-        padding: '0.75rem', borderRadius: '8px', border: 'none',
-        cursor: 'pointer', fontSize: '1rem', marginTop: '2rem', width: '100%'
-      }}>
+      {/* --- THIS IS THE UPDATED BUTTON --- */}
+      <button className="pro-button" style={{ marginTop: '2rem', width: '100%' }}>
         Invest Now
       </button>
     </div>
