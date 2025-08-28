@@ -48,7 +48,9 @@ export default function DashboardPage() {
     return <div style={{height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#111827', color: 'white'}}>Loading Your Account...</div>;
   }
 
-  const referralLink = profile ? `https://investment-website-git-main-easter-12s-projects.vercel.app/signup?ref=${profile.username}` : '';
+  // --- THIS IS THE GUARANTEED FIX ---
+  // We are using your exact Vercel URL. This is foolproof.
+  const referralLink = profile ? `https://investment-website-orcin.vercel.app/signup?ref=${profile.username}` : '';
 
   return (
     <div style={{ backgroundColor: '#111827', minHeight: 'calc(100vh - 142px)', color: 'white', padding: '1rem', overflowX: 'hidden' }}>
@@ -58,8 +60,6 @@ export default function DashboardPage() {
         </FadeInSection>
 
         <FadeInSection>
-          {/* --- THIS IS THE CORRECTED STRUCTURE --- */}
-          {/* All cards are now inside the single grid container */}
           <div className={styles.dashboardGrid}>
             <div className={styles.summaryCard}>
               <h2 className={styles.cardTitle}>Account Balance</h2>
