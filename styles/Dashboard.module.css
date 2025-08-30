@@ -1,14 +1,22 @@
+/* This is the main grid container for the top cards */
 .dashboardGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 2rem;
+  /* On desktop, create two columns of equal size */
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
 }
 
-.summaryCard, .actionCard, .referralCard, .withdrawalCard {
+/* This is the base style for all cards in the grid */
+.card {
   background-color: #1e293b;
   border-radius: 12px;
-  padding: 1.5rem; /* Slightly reduced padding for better fit */
+  padding: 1.5rem;
   border: 1px solid #334155;
+}
+
+/* Specific style for the withdrawal card to make it span two columns on desktop */
+.withdrawalCard {
+  grid-column: span 2;
 }
 
 .cardTitle {
@@ -17,6 +25,7 @@
   color: #9ca3af;
   font-weight: bold;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .balanceText {
@@ -37,7 +46,7 @@
   font-family: monospace;
 }
 
-/* --- NEW CLASSES FOR HEADINGS --- */
+/* Main page headings */
 .dashboardHeading {
   font-size: 2.5rem;
   font-weight: bold;
@@ -46,26 +55,25 @@
 }
 
 .dashboardSectionHeading {
-  font-size: 2.5rem;
+  font-size: 2.2rem;
   font-weight: bold;
   border-top: 1px solid #334155;
   padding-top: 3rem;
 }
 
-
 /* --- THIS IS THE GUARANTEED MOBILE FIX --- */
 @media (max-width: 768px) {
-  /* Make the grid stack into a single column */
+  /* On mobile, force the grid to be a single column */
   .dashboardGrid {
-    display: block; /* Ditch the grid, just stack elements */
+    grid-template-columns: 1fr;
   }
 
-  /* Add space between the stacked cards */
-  .summaryCard, .actionCard, .referralCard, .withdrawalCard {
-    margin-bottom: 1.5rem;
+  /* On mobile, the withdrawal card should just be a normal card */
+  .withdrawalCard {
+    grid-column: span 1;
   }
 
-  /* Reduce text size for readability */
+  /* Reduce text sizes for better readability on small screens */
   .dashboardHeading {
     font-size: 1.8rem;
   }
